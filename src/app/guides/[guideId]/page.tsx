@@ -274,8 +274,12 @@ export default function GuideDetailPage() {
 
         {/* Profile header */}
         <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white text-3xl font-bold mb-4">
-            {guide.display_name?.[0] || '?'}
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white text-3xl font-bold mb-4 overflow-hidden">
+            {guide.avatar_url ? (
+              <img src={guide.avatar_url} alt={guide.display_name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+            ) : (
+              <span>{guide.display_name?.[0] || '?'}</span>
+            )}
           </div>
           <div className="flex items-center gap-2 mb-1">
             <h1 className="text-2xl font-bold">{guide.display_name}</h1>

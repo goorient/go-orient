@@ -210,8 +210,12 @@ export default function GuidesPage() {
                 <TiltCard className="rounded-xl bg-white p-5 cursor-pointer h-full">
                   {/* Header: avatar + name + badge */}
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white text-xl font-bold shrink-0">
-                      {guide.display_name?.[0] || '?'}
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white text-xl font-bold shrink-0 overflow-hidden">
+                      {guide.avatar_url ? (
+                        <img src={guide.avatar_url} alt={guide.display_name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+                      ) : (
+                        <span>{guide.display_name?.[0] || '?'}</span>
+                      )}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
