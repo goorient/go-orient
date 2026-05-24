@@ -7,7 +7,7 @@ import { createBrowserClient } from '@supabase/ssr'
 import { Navbar } from '@/components/layout/navbar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Check, Clock, MessageCircle, AlertCircle, Shield, XCircle } from 'lucide-react'
+import { Check, Clock, MessageCircle, AlertCircle, Shield, XCircle, CreditCard, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
@@ -70,6 +70,9 @@ export default function OrderDetailPage() {
   const [order, setOrder] = useState<OrderData | null>(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
+  const [showPayment, setShowPayment] = useState(false)
+  const [paymentProcessing, setPaymentProcessing] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState<'credit_card' | 'alipay' | 'wechat'>('credit_card')
 
   useEffect(() => {
     if (!user) { router.push('/login'); return }
@@ -163,6 +166,26 @@ export default function OrderDetailPage() {
     setActionLoading(false)
   }
 
+  const handleSimulatedPayment = async () => {
+    if (!order) return
+    setPaymentProcessing(true)
+    // Simulate payment processing delay
+    await new Promise(r => setTimeout(r, 2000))
+    setOrder(prev => prev ? { ...prev, escrow_status: 'paid_to_escrow' } : prev)
+    try {
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      )
+      await supabase
+        .from('orders')
+        .update({ escrow_status: 'paid_to_escrow', paid_at: new Date().toISOString(), payment_method: paymentMethod })
+        .eq('id', order.id)
+    } catch { /* optimistic */ }
+    setPaymentProcessing(false)
+    setShowPayment(false)
+  }
+
   if (!user) return null
 
   if (loading) {
@@ -207,7 +230,9 @@ export default function OrderDetailPage() {
                   <p className="text-xs text-amber-600">Complete payment to confirm your booking.</p>
                 </div>
               </div>
-              <Button size="sm">Pay Now</Button>
+              <Button size="sm" onClick={() => setShowPayment(true)} className="gap-1">
+                <CreditCard className="w-4 h-4" /> Pay Now
+              </Button>
             </CardContent>
           </Card>
         )
@@ -389,6 +414,78 @@ export default function OrderDetailPage() {
           </CardContent>
         </Card>
       </motion.div>
+
+      {/* Payment Modal */}
+      {showPayment && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden"
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-bold">Complete Payment</h2>
+                <button onClick={() => setShowPayment(false)} className="text-slate-400 hover:text-slate-600">
+                  <XCircle className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Amount */}
+              <div className="bg-slate-50 rounded-xl p-4 mb-6 text-center">
+                <p className="text-sm text-slate-500 mb-1">Amount to pay</p>
+                <p className="text-3xl font-bold">¥{order.agreed_price_cny.toLocaleString()}</p>
+                <p className="text-xs text-slate-400 mt-1">Held in escrow until service completion</p>
+              </div>
+
+              {/* Payment Methods */}
+              <p className="text-sm font-semibold mb-3">Payment Method</p>
+              <div className="space-y-2 mb-6">
+                {[
+                  { key: 'credit_card' as const, label: 'Credit / Debit Card', desc: 'Visa, Mastercard, UnionPay', icon: '💳' },
+                  { key: 'alipay' as const, label: 'Alipay', desc: '支付宝', icon: '🅰️' },
+                  { key: 'wechat' as const, label: 'WeChat Pay', desc: '微信支付', icon: '💬' },
+                ].map(method => (
+                  <button
+                    key={method.key}
+                    onClick={() => setPaymentMethod(method.key)}
+                    className={`w-full p-3 rounded-lg border-2 flex items-center gap-3 transition-colors text-left ${
+                      paymentMethod === method.key ? 'border-slate-900 bg-slate-50' : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <span className="text-xl">{method.icon}</span>
+                    <div>
+                      <p className="text-sm font-medium">{method.label}</p>
+                      <p className="text-xs text-slate-400">{method.desc}</p>
+                    </div>
+                    {paymentMethod === method.key && (
+                      <Check className="w-4 h-4 ml-auto text-slate-900" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Simulated notice */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-700">
+                <strong>Demo Mode:</strong> This is a simulated payment. No real charges will be made.
+              </div>
+
+              {/* Pay button */}
+              <Button
+                className="w-full h-12 text-base gap-2"
+                onClick={handleSimulatedPayment}
+                disabled={paymentProcessing}
+              >
+                {paymentProcessing ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
+                ) : (
+                  <>Pay ¥{order.agreed_price_cny.toLocaleString()}</>
+                )}
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Sticky bottom bar for chat */}
       {order.escrow_status !== 'cancelled' && order.escrow_status !== 'funds_released' && order.escrow_status !== 'tourist_confirmed' && (

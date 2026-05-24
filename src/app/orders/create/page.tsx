@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Calendar, Users, Shield, Check } from 'lucide-react'
+import { Calendar, Users, Shield, Check, CreditCard, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { createBrowserClient } from '@supabase/ssr'
 
@@ -35,6 +35,8 @@ function OrderCreateForm() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [createdOrderId, setCreatedOrderId] = useState('')
+  const [paying, setPaying] = useState(false)
+  const [paid, setPaid] = useState(false)
   const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null)
 
   useEffect(() => {
@@ -167,25 +169,100 @@ function OrderCreateForm() {
   }
 
   if (success) {
+    const handlePayNow = async () => {
+      setPaying(true)
+      await new Promise(r => setTimeout(r, 2000))
+      // Update order status in Supabase
+      if (createdOrderId && !createdOrderId.startsWith('demo-')) {
+        try {
+          const supabase = createBrowserClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+          )
+          await supabase
+            .from('orders')
+            .update({ escrow_status: 'paid_to_escrow', paid_at: new Date().toISOString(), payment_method: 'credit_card' })
+            .eq('id', createdOrderId)
+        } catch { /* optimistic */ }
+      }
+      setPaying(false)
+      setPaid(true)
+    }
+
     return (
       <div className="min-h-screen bg-slate-50">
         <Navbar />
         <div className="max-w-lg mx-auto px-4 py-16 text-center">
-          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-            <Check className="w-8 h-8 text-green-600" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">Booking Request Sent!</h2>
-          <p className="text-slate-500 mb-6">
-            Your booking request has been sent to the guide. You&apos;ll receive a notification once they respond.
-          </p>
-          <div className="flex gap-3 justify-center">
-            <Link href={`/orders/${createdOrderId}`}>
-              <Button>View Order</Button>
-            </Link>
-            <Link href="/">
-              <Button variant="outline">Back to Home</Button>
-            </Link>
-          </div>
+          {paid ? (
+            <>
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-600" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">Payment Successful!</h2>
+              <p className="text-slate-500 mb-6">
+                Your payment of ¥{totalPrice.toLocaleString()} has been processed. Your money is held in escrow until the service is completed.
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6 text-xs text-blue-700">
+                <strong>Demo Mode:</strong> This was a simulated payment. No real charges were made.
+              </div>
+              <div className="flex gap-3 justify-center">
+                <Link href={`/orders/${createdOrderId}`}>
+                  <Button>View Order</Button>
+                </Link>
+                <Link href="/">
+                  <Button variant="outline">Back to Home</Button>
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-600" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">Booking Created!</h2>
+              <p className="text-slate-500 mb-4">
+                Your booking has been created. Complete payment to confirm it.
+              </p>
+
+              {/* Payment card */}
+              <Card className="mb-6 text-left">
+                <CardContent className="p-5 space-y-4">
+                  <div className="text-center">
+                    <p className="text-sm text-slate-500 mb-1">Amount Due</p>
+                    <p className="text-3xl font-bold">¥{totalPrice.toLocaleString()}</p>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Plan</span>
+                      <span className="font-medium">{planInfo?.title}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Travel Date</span>
+                      <span className="font-medium">{travelDate}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Group Size</span>
+                      <span className="font-medium">{groupSize} people</span>
+                    </div>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-3 flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-slate-400" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Credit / Debit Card</p>
+                      <p className="text-xs text-slate-400">Simulated payment</p>
+                    </div>
+                  </div>
+                  <Button className="w-full h-12 text-base gap-2" onClick={handlePayNow} disabled={paying}>
+                    {paying ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</> : <>Pay ¥{totalPrice.toLocaleString()}</>}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Link href={`/orders/${createdOrderId}`}>
+                <Button variant="outline">Pay Later</Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     )
