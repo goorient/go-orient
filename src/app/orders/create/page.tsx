@@ -169,24 +169,33 @@ function OrderCreateForm() {
   }
 
   if (success) {
+    const isDemo = createdOrderId.startsWith('demo-')
+
     const handlePayNow = async () => {
       setPaying(true)
-      await new Promise(r => setTimeout(r, 2000))
-      // Update order status in Supabase
-      if (createdOrderId && !createdOrderId.startsWith('demo-')) {
+
+      if (isDemo) {
+        // Demo: simulated payment
+        await new Promise(r => setTimeout(r, 2000))
+        setPaid(true)
+        setPaying(false)
+      } else {
+        // Real: redirect to Stripe Checkout
         try {
-          const supabase = createBrowserClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-          )
-          await supabase
-            .from('orders')
-            .update({ escrow_status: 'paid_to_escrow', paid_at: new Date().toISOString(), payment_method: 'credit_card' })
-            .eq('id', createdOrderId)
-        } catch { /* optimistic */ }
+          const res = await fetch('/api/payments/create-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId: createdOrderId }),
+          })
+          const data = await res.json()
+          if (data.url) {
+            window.location.href = data.url
+            return
+          }
+        } catch { /* fall through */ }
+        // Fallback: go to order detail page
+        router.push(`/orders/${createdOrderId}`)
       }
-      setPaying(false)
-      setPaid(true)
     }
 
     return (
@@ -202,9 +211,11 @@ function OrderCreateForm() {
               <p className="text-slate-500 mb-6">
                 Your payment of ¥{totalPrice.toLocaleString()} has been processed. Your money is held in escrow until the service is completed.
               </p>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6 text-xs text-blue-700">
-                <strong>Demo Mode:</strong> This was a simulated payment. No real charges were made.
-              </div>
+              {isDemo && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6 text-xs text-blue-700">
+                  <strong>Demo Mode:</strong> This was a simulated payment. No real charges were made.
+                </div>
+              )}
               <div className="flex gap-3 justify-center">
                 <Link href={`/orders/${createdOrderId}`}>
                   <Button>View Order</Button>
@@ -248,12 +259,16 @@ function OrderCreateForm() {
                   <div className="bg-slate-50 rounded-lg p-3 flex items-center gap-2">
                     <CreditCard className="w-5 h-5 text-slate-400" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium">Credit / Debit Card</p>
-                      <p className="text-xs text-slate-400">Simulated payment</p>
+                      <p className="text-sm font-medium">Secure Payment via Stripe</p>
+                      <p className="text-xs text-slate-400">Credit card, Alipay</p>
                     </div>
                   </div>
                   <Button className="w-full h-12 text-base gap-2" onClick={handlePayNow} disabled={paying}>
-                    {paying ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</> : <>Pay ¥{totalPrice.toLocaleString()}</>}
+                    {paying ? (
+                      <><Loader2 className="w-5 h-5 animate-spin" /> {isDemo ? 'Processing...' : 'Redirecting...'}</>
+                    ) : (
+                      <>Pay ¥{totalPrice.toLocaleString()}</>
+                    )}
                   </Button>
                 </CardContent>
               </Card>
