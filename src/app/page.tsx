@@ -317,6 +317,8 @@ export default function HomePage() {
               <h4 className="text-white font-semibold mb-3">Support</h4>
               <ul className="space-y-2 text-sm">
                 <li><Link href="/visa/service" className="hover:text-white transition-colors">Visa Service</Link></li>
+                <li><Link href="/legal/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
+                <li><Link href="/legal/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
                 <li><span className="text-slate-500">help@goorient.com</span></li>
               </ul>
             </div>
