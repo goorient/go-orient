@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
-import { FileText, Plus, Eye, Heart, Image, X, Check, MapPin } from 'lucide-react'
+import { FileText, Plus, Eye, Heart, Image, X, Check, MapPin, Upload, Loader2, Send, ArrowLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { createBrowserClient } from '@supabase/ssr'
+import { uploadGalleryPhoto } from '@/lib/upload'
 import Link from 'next/link'
 
 interface Post {
@@ -36,6 +37,7 @@ export default function DashboardPostsPage() {
   const [loading, setLoading] = useState(true)
   const [showCreate, setShowCreate] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
 
   // Form state
   const [newTitle, setNewTitle] = useState('')
@@ -45,6 +47,8 @@ export default function DashboardPostsPage() {
   const [newTagInput, setNewTagInput] = useState('')
   const [newMediaUrls, setNewMediaUrls] = useState<string[]>([])
   const [newMediaInput, setNewMediaInput] = useState('')
+  const [uploadingPhotos, setUploadingPhotos] = useState(false)
+  const photoInputRef = useRef<HTMLInputElement>(null)
 
   // Load posts
   useEffect(() => {
@@ -92,9 +96,29 @@ export default function DashboardPostsPage() {
     setNewMediaUrls([]); setNewMediaInput('')
   }
 
-  const handleCreate = async () => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || !user) return
+    setUploadingPhotos(true)
+    try {
+      const urls: string[] = []
+      for (let i = 0; i < files.length; i++) {
+        const url = await uploadGalleryPhoto(user.id, files[i])
+        urls.push(url)
+      }
+      setNewMediaUrls(prev => [...prev, ...urls])
+    } catch {
+      alert('Upload failed. Please try again.')
+    }
+    setUploadingPhotos(false)
+    if (photoInputRef.current) photoInputRef.current.value = ''
+  }
+
+  const handleCreate = async (status: 'draft' | 'published') => {
     if (!newTitle || !user) return
     setSaving(true)
+
+    const finalStatus = status
 
     try {
       const supabase = createBrowserClient(
@@ -109,7 +133,7 @@ export default function DashboardPostsPage() {
         media_urls: newMediaUrls,
         tags: newTags,
         destination: newDestination || null,
-        status: 'draft',
+        status: finalStatus,
       })
     } catch {
       // Supabase unreachable
@@ -119,7 +143,7 @@ export default function DashboardPostsPage() {
       id: `post-${Date.now()}`,
       title: newTitle,
       description: newDesc,
-      status: 'draft',
+      status: finalStatus,
       views: 0,
       likes: 0,
       media_urls: newMediaUrls,
@@ -161,119 +185,193 @@ export default function DashboardPostsPage() {
             <CardContent className="p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold">Create New Post</h3>
-                <Button variant="ghost" size="sm" onClick={() => { setShowCreate(false); resetForm() }}>
-                  <X className="w-4 h-4" />
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" onClick={() => setShowPreview(!showPreview)}>
+                    <Eye className="w-4 h-4 mr-1" /> {showPreview ? 'Edit' : 'Preview'}
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { setShowCreate(false); resetForm() }}>
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-slate-700 font-semibold">Title *</Label>
-                  <Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Give your post a catchy title" className="h-10" />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-slate-700 font-semibold">Description</Label>
-                  <textarea
-                    value={newDesc}
-                    onChange={(e) => setNewDesc(e.target.value)}
-                    placeholder="Share your tips, story, or recommendation..."
-                    rows={4}
-                    className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900"
-                  />
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-slate-700 font-semibold">Destination</Label>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <Input value={newDestination} onChange={(e) => setNewDestination(e.target.value)} placeholder="e.g., Beijing" className="h-10 pl-9" />
+              {showPreview ? (
+                /* Preview Mode */
+                <div className="space-y-4">
+                  {/* Preview image */}
+                  {newMediaUrls.length > 0 && (
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100">
+                      <img src={newMediaUrls[0]} alt="" className="w-full h-full object-cover" />
                     </div>
+                  )}
+                  <div>
+                    <h2 className="text-xl font-bold mb-2">{newTitle || 'Untitled Post'}</h2>
+                    {newDestination && (
+                      <p className="text-sm text-slate-500 flex items-center gap-1 mb-2">
+                        <MapPin className="w-3 h-3" /> {newDestination}
+                      </p>
+                    )}
+                    <p className="text-sm text-slate-700 whitespace-pre-wrap">{newDesc || 'No description yet.'}</p>
                   </div>
+                  {newTags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {newTags.map(tag => (
+                        <span key={tag} className="text-xs text-slate-500">#{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                  {newMediaUrls.length > 1 && (
+                    <div className="grid grid-cols-3 gap-2">
+                      {newMediaUrls.slice(1).map((url, i) => (
+                        <img key={i} src={url} alt="" className="w-full h-24 object-cover rounded-lg" />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Edit Mode */
+                <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-slate-700 font-semibold">Tags</Label>
-                    <div className="flex gap-1">
-                      <Input
-                        value={newTagInput}
-                        onChange={(e) => setNewTagInput(e.target.value)}
-                        placeholder="Add tag..."
-                        className="h-10"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && newTagInput.trim()) {
-                            e.preventDefault()
+                    <Label className="text-slate-700 font-semibold">Title *</Label>
+                    <Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Give your post a catchy title" className="h-10" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-slate-700 font-semibold">Description</Label>
+                      <span className="text-xs text-slate-400">{newDesc.length}/2000</span>
+                    </div>
+                    <textarea
+                      value={newDesc}
+                      onChange={(e) => setNewDesc(e.target.value)}
+                      placeholder="Share your tips, story, or recommendation..."
+                      rows={6}
+                      maxLength={2000}
+                      className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 resize-y"
+                    />
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-slate-700 font-semibold">Destination</Label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <Input value={newDestination} onChange={(e) => setNewDestination(e.target.value)} placeholder="e.g., Beijing" className="h-10 pl-9" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-slate-700 font-semibold">Tags</Label>
+                      <div className="flex gap-1">
+                        <Input
+                          value={newTagInput}
+                          onChange={(e) => setNewTagInput(e.target.value)}
+                          placeholder="Add tag..."
+                          className="h-10"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && newTagInput.trim()) {
+                              e.preventDefault()
+                              if (!newTags.includes(newTagInput.trim())) {
+                                setNewTags([...newTags, newTagInput.trim()])
+                              }
+                              setNewTagInput('')
+                            }
+                          }}
+                        />
+                        <Button variant="outline" size="sm" onClick={() => {
+                          if (newTagInput.trim() && !newTags.includes(newTagInput.trim())) {
                             setNewTags([...newTags, newTagInput.trim()])
                             setNewTagInput('')
+                          }
+                        }}>
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {newTags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {newTags.map((tag) => (
+                        <span key={tag} className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
+                          {tag}
+                          <button onClick={() => setNewTags(newTags.filter(t => t !== tag))}><X className="w-3 h-3" /></button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Photos */}
+                  <div className="space-y-2">
+                    <Label className="text-slate-700 font-semibold">Photos</Label>
+                    {newMediaUrls.length > 0 && (
+                      <div className="grid grid-cols-3 gap-2">
+                        {newMediaUrls.map((url, i) => (
+                          <div key={i} className="relative group">
+                            <img src={url} alt="" className="w-full h-24 object-cover rounded-lg border" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
+                            <button onClick={() => setNewMediaUrls(newMediaUrls.filter((_, j) => j !== i))} className="absolute top-0.5 right-0.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><X className="w-3 h-3" /></button>
+                            {i === 0 && <span className="absolute bottom-1 left-1 text-xs bg-black/60 text-white px-1.5 py-0.5 rounded">Cover</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex gap-2">
+                      <input
+                        ref={photoInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                        onChange={handlePhotoUpload}
+                        className="hidden"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => photoInputRef.current?.click()}
+                        disabled={uploadingPhotos}
+                        className="gap-1"
+                      >
+                        {uploadingPhotos ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                        {uploadingPhotos ? 'Uploading...' : 'Upload Photos'}
+                      </Button>
+                      <span className="text-xs text-slate-400 self-center">or</span>
+                      <Input
+                        value={newMediaInput}
+                        onChange={(e) => setNewMediaInput(e.target.value)}
+                        placeholder="Paste image URL..."
+                        className="h-9 flex-1 text-sm"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && newMediaInput.trim()) {
+                            e.preventDefault()
+                            setNewMediaUrls([...newMediaUrls, newMediaInput.trim()])
+                            setNewMediaInput('')
                           }
                         }}
                       />
                       <Button variant="outline" size="sm" onClick={() => {
-                        if (newTagInput.trim()) {
-                          setNewTags([...newTags, newTagInput.trim()])
-                          setNewTagInput('')
+                        if (newMediaInput.trim()) {
+                          setNewMediaUrls([...newMediaUrls, newMediaInput.trim()])
+                          setNewMediaInput('')
                         }
                       }}>
                         <Plus className="w-4 h-4" />
                       </Button>
                     </div>
+                    <p className="text-xs text-slate-400">First photo becomes the cover image. Max 5MB per photo.</p>
                   </div>
                 </div>
+              )}
 
-                {newTags.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {newTags.map((tag) => (
-                      <span key={tag} className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs flex items-center gap-1">
-                        {tag}
-                        <button onClick={() => setNewTags(newTags.filter(t => t !== tag))}><X className="w-3 h-3" /></button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Media URLs */}
-                <div className="space-y-2">
-                  <Label className="text-slate-700 font-semibold">Photos</Label>
-                  {newMediaUrls.length > 0 && (
-                    <div className="grid grid-cols-4 gap-2">
-                      {newMediaUrls.map((url, i) => (
-                        <div key={i} className="relative group">
-                          <img src={url} alt="" className="w-full h-20 object-cover rounded-lg border" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
-                          <button onClick={() => setNewMediaUrls(newMediaUrls.filter((_, j) => j !== i))} className="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><X className="w-2.5 h-2.5" /></button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <div className="flex gap-1">
-                    <Input
-                      value={newMediaInput}
-                      onChange={(e) => setNewMediaInput(e.target.value)}
-                      placeholder="Paste image URL..."
-                      className="h-10"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && newMediaInput.trim()) {
-                          e.preventDefault()
-                          setNewMediaUrls([...newMediaUrls, newMediaInput.trim()])
-                          setNewMediaInput('')
-                        }
-                      }}
-                    />
-                    <Button variant="outline" size="sm" onClick={() => {
-                      if (newMediaInput.trim()) {
-                        setNewMediaUrls([...newMediaUrls, newMediaInput.trim()])
-                        setNewMediaInput('')
-                      }
-                    }}>
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 pt-2">
-                  <Button variant="outline" onClick={() => { setShowCreate(false); resetForm() }}>Cancel</Button>
-                  <Button onClick={handleCreate} disabled={!newTitle || saving}>
-                    {saving ? 'Saving...' : 'Save Draft'}
-                  </Button>
-                </div>
+              {/* Action buttons — always visible */}
+              <div className="flex gap-2 pt-4 mt-4 border-t border-slate-100">
+                <Button variant="outline" onClick={() => { setShowCreate(false); resetForm() }}>Cancel</Button>
+                <div className="flex-1" />
+                <Button variant="outline" onClick={() => handleCreate('draft')} disabled={!newTitle || saving}>
+                  {saving ? 'Saving...' : 'Save Draft'}
+                </Button>
+                <Button onClick={() => handleCreate('published')} disabled={!newTitle || newMediaUrls.length === 0 || saving} className="gap-1">
+                  <Send className="w-4 h-4" /> {saving ? 'Publishing...' : 'Publish'}
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -334,7 +432,7 @@ export default function DashboardPostsPage() {
                       )}
                     </div>
                     <Link href={`/feed/${post.id}`}>
-                      <Button variant="ghost" size="sm" className="shrink-0 text-xs">Edit</Button>
+                      <Button variant="ghost" size="sm" className="shrink-0 text-xs">View</Button>
                     </Link>
                   </CardContent>
                 </Card>
