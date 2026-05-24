@@ -58,7 +58,7 @@ const DEMO_FEED_POSTS: Post[] = [
   {
     id: 'demo-f6', author_id: 'demo', post_type: 'image', title: 'West Lake at Dusk',
     description: "Hangzhou's West Lake painted in golden light at sunset.",
-    media_urls: ['https://images.unsplash.com/photo-1599707367812-042e4880e007?w=600&h=800&fit=crop'],
+    media_urls: ['https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?w=600&h=800&fit=crop'],
     video_url: null, thumbnail_url: null, linked_plan_id: null, tags: ['Hangzhou', 'Lake', 'Sunset'],
     destination: 'Hangzhou', likes_count: 198, comments_count: 15, favorites_count: 132, shares_count: 41,
     view_count: 2900, status: 'published', created_at: '2026-05-05T08:00:00Z', updated_at: '2026-05-05T08:00:00Z',

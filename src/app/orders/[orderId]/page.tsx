@@ -294,7 +294,7 @@ export default function OrderDetailPage() {
         {/* Cover image */}
         {order.plan_cover && (
           <div className="relative h-40 bg-slate-100 rounded-xl overflow-hidden mb-4">
-            <img src={order.plan_cover} alt={order.plan_title} className="w-full h-full object-cover" />
+            <img src={order.plan_cover} alt={order.plan_title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none' }} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             <div className="absolute bottom-3 left-4 right-4">
               <p className="text-white font-bold text-lg leading-tight">{order.plan_title}</p>

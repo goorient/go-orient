@@ -194,7 +194,7 @@ export default function OrdersPage() {
                       <CardContent className="p-0">
                         {order.cover_image_url && (
                           <div className="h-28 bg-slate-100 overflow-hidden">
-                            <img src={order.cover_image_url} alt="" className="w-full h-full object-cover" />
+                            <img src={order.cover_image_url} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none' }} />
                           </div>
                         )}
                         <div className="p-4">

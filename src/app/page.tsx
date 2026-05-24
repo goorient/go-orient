@@ -58,7 +58,7 @@ const DEMO_POSTS: Post[] = [
   {
     id: 'demo-6', author_id: 'demo', post_type: 'image', title: 'West Lake Serenity in Hangzhou',
     description: 'A misty morning at West Lake — willow trees, stone bridges, and pagodas reflected in still waters.',
-    media_urls: ['https://images.unsplash.com/photo-1599707367812-042e4880e007?w=600&h=800&fit=crop'],
+    media_urls: ['https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?w=600&h=800&fit=crop'],
     video_url: null, thumbnail_url: null, linked_plan_id: null, tags: ['Hangzhou', 'Lake', 'Peaceful'],
     destination: 'Hangzhou', likes_count: 167, comments_count: 9, favorites_count: 112, shares_count: 28,
     view_count: 2100, status: 'published', created_at: '2026-05-05T08:00:00Z', updated_at: '2026-05-05T08:00:00Z',

@@ -207,6 +207,7 @@ function PlansContent() {
                         alt={plan.title}
                         className="w-full h-full object-cover"
                         loading="lazy"
+                        onError={(e) => { e.currentTarget.style.display = 'none' }}
                       />
                     )}
                     <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-sm font-bold text-slate-900">

@@ -126,7 +126,7 @@ const DEMO_POSTS: Record<string, Post> = {
   'demo-f6': {
     id: 'demo-f6', author_id: 'demo', post_type: 'image', title: 'West Lake at Dusk',
     description: "Hangzhou's West Lake painted in golden light at sunset.",
-    media_urls: ['https://images.unsplash.com/photo-1599707367812-042e4880e007?w=600&h=800&fit=crop'],
+    media_urls: ['https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?w=600&h=800&fit=crop'],
     video_url: null, thumbnail_url: null, linked_plan_id: null, tags: ['Hangzhou', 'Lake'],
     destination: 'Hangzhou', likes_count: 198, comments_count: 0, favorites_count: 132, shares_count: 41,
     view_count: 2900, status: 'published', created_at: '2026-05-05T08:00:00Z', updated_at: '2026-05-05T08:00:00Z',
@@ -281,7 +281,7 @@ export default function PostDetailPage() {
           <div className="md:col-span-3 space-y-3">
             <div className="relative aspect-[4/3] bg-slate-100 rounded-xl overflow-hidden">
               {post.media_urls[currentImage] && (
-                <img src={post.media_urls[currentImage]} alt={post.title} className="w-full h-full object-cover" />
+                <img src={post.media_urls[currentImage]} alt={post.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none' }} />
               )}
             </div>
             {post.media_urls.length > 1 && (
@@ -294,7 +294,7 @@ export default function PostDetailPage() {
                       i === currentImage ? 'border-slate-900' : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <img src={url} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.parentElement!.style.display = 'none' }} />
                   </button>
                 ))}
               </div>

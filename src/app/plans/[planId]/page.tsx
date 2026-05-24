@@ -218,7 +218,7 @@ export default function PlanDetailPage() {
         <div className="space-y-3 mb-6">
           <div className="relative aspect-[16/9] bg-slate-100 rounded-xl overflow-hidden">
             {allImages[currentImage] && (
-              <img src={allImages[currentImage]} alt={plan.title} className="w-full h-full object-cover" />
+              <img src={allImages[currentImage]} alt={plan.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none' }} />
             )}
           </div>
           {allImages.length > 1 && (
@@ -231,7 +231,7 @@ export default function PlanDetailPage() {
                     i === currentImage ? 'border-slate-900' : 'border-transparent opacity-60 hover:opacity-100'
                   }`}
                 >
-                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <img src={url} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.parentElement!.style.display = 'none' }} />
                 </button>
               ))}
             </div>

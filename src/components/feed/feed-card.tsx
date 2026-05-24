@@ -20,6 +20,7 @@ export function FeedCard({ post }: FeedCardProps) {
               alt={post.title}
               className="w-full h-full object-cover"
               loading="lazy"
+              onError={(e) => { e.currentTarget.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="533" fill="%23e2e8f0"><rect width="400" height="533"/><text x="200" y="266" text-anchor="middle" fill="%2394a3b8" font-size="48">📷</text></svg>') }}
             />
           )}
           {post.post_type === 'video' && (

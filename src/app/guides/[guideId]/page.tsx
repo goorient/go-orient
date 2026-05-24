@@ -54,7 +54,7 @@ function getDemoGuide(id: string): GuideDetail | null {
       gallery_urls: [
         'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=400&h=400&fit=crop',
         'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=400&h=400&fit=crop',
-        'https://images.unsplash.com/photo-1599707367812-042e4880e007?w=400&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?w=400&h=400&fit=crop',
       ],
     },
     'demo-guide-2': {
@@ -80,7 +80,7 @@ function getDemoGuide(id: string): GuideDetail | null {
       gallery_urls: [
         'https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=400&h=400&fit=crop',
         'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=400&h=400&fit=crop',
-        'https://images.unsplash.com/photo-1599707367812-042e4880e007?w=400&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?w=400&h=400&fit=crop',
       ],
     },
     'demo-guide-4': {
@@ -92,7 +92,7 @@ function getDemoGuide(id: string): GuideDetail | null {
       intro: 'Shanghai through a local lens',
       gallery_urls: [
         'https://images.unsplash.com/photo-1537531383496-f4749b8032cf?w=400&h=400&fit=crop',
-        'https://images.unsplash.com/photo-1599707367812-042e4880e007?w=400&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?w=400&h=400&fit=crop',
         'https://images.unsplash.com/photo-1528164344705-47542687000d?w=400&h=400&fit=crop',
       ],
     },
@@ -117,7 +117,7 @@ function getDemoGuide(id: string): GuideDetail | null {
       years_experience: 3, verification_status: 'verified',
       intro: 'Two wheels, one beautiful lake',
       gallery_urls: [
-        'https://images.unsplash.com/photo-1599707367812-042e4880e007?w=400&h=400&fit=crop',
+        'https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?w=400&h=400&fit=crop',
         'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=400&h=400&fit=crop',
         'https://images.unsplash.com/photo-1537531383496-f4749b8032cf?w=400&h=400&fit=crop',
       ],
@@ -300,6 +300,7 @@ export default function GuideDetailPage() {
                   src={guide.gallery_urls[currentImage]}
                   alt={guide.display_name}
                   className="w-full h-full object-cover"
+                  onError={(e) => { e.currentTarget.style.display = 'none' }}
                 />
               )}
             </div>
@@ -313,7 +314,7 @@ export default function GuideDetailPage() {
                       i === currentImage ? 'border-slate-900' : 'border-transparent opacity-50 hover:opacity-100'
                     }`}
                   >
-                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <img src={url} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.parentElement!.style.display = 'none' }} />
                   </button>
                 ))}
               </div>

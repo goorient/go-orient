@@ -529,7 +529,7 @@ export default function DashboardPlansPage() {
                   <CardContent className="p-4">
                     <div className="flex items-center gap-4">
                       {plan.cover_image_url ? (
-                        <img src={plan.cover_image_url} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0 border" />
+                        <img src={plan.cover_image_url} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0 border" onError={(e) => { e.currentTarget.style.display = 'none' }} />
                       ) : (
                         <div className="w-14 h-14 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
                           <Map className="w-5 h-5 text-slate-400" />
