@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/auth-store'
 import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Compass, Map, Users, MessageCircle, User } from 'lucide-react'
+import { Compass, Map, Users, MessageCircle, User, Shield } from 'lucide-react'
 
 const MOBILE_NAV_ITEMS = [
   { href: '/', label: 'Discover', icon: Compass },
@@ -35,8 +35,8 @@ export function Navbar() {
     router.refresh()
   }
 
-  // Don't show mobile nav on dashboard pages (they have their own)
-  const isDashboard = pathname?.startsWith('/dashboard')
+  // Don't show mobile nav on dashboard/admin pages (they have their own)
+  const isDashboard = pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin')
 
   return (
     <>
@@ -64,6 +64,11 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             {user ? (
               <>
+                {profile?.role === 'admin' && (
+                  <Link href="/admin">
+                    <Button variant="outline" size="sm" className="gap-1"><Shield className="w-3 h-3" /> Admin</Button>
+                  </Link>
+                )}
                 {profile?.role === 'guide' && (
                   <Link href="/dashboard">
                     <Button variant="outline" size="sm">Dashboard</Button>
