@@ -33,9 +33,12 @@ export async function middleware(request: NextRequest) {
   }
 
   const protectedPaths = ['/dashboard', '/profile', '/orders', '/chat', '/publish']
-  const isProtected = protectedPaths.some(p => request.nextUrl.pathname.startsWith(p))
+  const adminPaths = ['/admin']
 
-  if (isProtected && !session) {
+  const isProtected = protectedPaths.some(p => request.nextUrl.pathname.startsWith(p))
+  const isAdmin = adminPaths.some(p => request.nextUrl.pathname.startsWith(p))
+
+  if ((isProtected || isAdmin) && !session) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     url.searchParams.set('redirect', request.nextUrl.pathname)
