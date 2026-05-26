@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/providers/auth-provider";
+import { I18nProvider } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://go-orient.com"),
@@ -36,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-white font-sans">
-        <AuthProvider>{children}</AuthProvider>
+        <I18nProvider><AuthProvider>{children}</AuthProvider></I18nProvider>
       </body>
     </html>
   );

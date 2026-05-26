@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Compass, Map, Users, MessageCircle, User, Shield } from 'lucide-react'
 import { NotificationBell } from '@/components/notifications/notification-bell'
+import { LanguageToggle } from '@/components/layout/language-toggle'
 
 const MOBILE_NAV_ITEMS = [
   { href: '/', label: 'Discover', icon: Compass },
@@ -76,6 +77,7 @@ export function Navbar() {
                   </Link>
                 )}
                 <NotificationBell />
+                <LanguageToggle />
                 <Link href="/chat">
                   <Button variant="ghost" size="sm">Chat</Button>
                 </Link>
@@ -107,9 +109,11 @@ export function Navbar() {
 
           {/* Mobile: show only sign in/out */}
           <div className="flex md:hidden items-center gap-1">
+            <LanguageToggle />
             {user ? (
               <>
                 <NotificationBell />
+                <LanguageToggle />
                 <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-xs">
                   Sign Out
                 </Button>

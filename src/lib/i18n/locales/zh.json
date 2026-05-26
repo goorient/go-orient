@@ -1,0 +1,118 @@
+{
+  "common": {
+    "signIn": "登录",
+    "signUp": "注册",
+    "signOut": "退出",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "search": "搜索",
+    "loading": "加载中...",
+    "back": "返回",
+    "next": "下一步",
+    "submit": "提交",
+    "profile": "个人中心",
+    "chat": "消息",
+    "dashboard": "工作台",
+    "admin": "管理"
+  },
+  "nav": {
+    "discover": "发现",
+    "tourPlans": "旅行方案",
+    "localGuides": "当地导游",
+    "visa": "签证",
+    "myOrders": "我的订单"
+  },
+  "home": {
+    "heroTitle": "发现真实的中国",
+    "heroSubtitle": "跟着当地导游走",
+    "heroDesc": "与认证当地导游一起探索中国的精彩。从万里长城到隐秘景点，体验地道中国。",
+    "searchPlaceholder": "搜索目的地、旅行方案或导游...",
+    "featuredTours": "热门旅行方案",
+    "featuredGuides": "推荐导游"
+  },
+  "plans": {
+    "title": "旅行方案",
+    "subtitle": "认证当地导游精心策划的行程",
+    "searchPlaceholder": "搜索旅行方案...",
+    "allCities": "全部城市",
+    "noPlans": "没有找到旅行方案",
+    "perPerson": "/人",
+    "days": "天",
+    "bookNow": "立即预订",
+    "viewDetails": "查看详情"
+  },
+  "guides": {
+    "title": "当地导游",
+    "subtitle": "连接中国各地的认证当地导游",
+    "searchPlaceholder": "搜索导游...",
+    "allCities": "全部城市",
+    "noGuides": "没有找到导游",
+    "specialties": "专长",
+    "languages": "语言",
+    "serviceCities": "服务城市",
+    "yearsExperience": "年经验",
+    "contactGuide": "联系导游"
+  },
+  "feed": {
+    "title": "旅行动态",
+    "subtitle": "来自当地导游的照片、故事和旅行攻略",
+    "searchPlaceholder": "搜索帖子...",
+    "allDestinations": "全部目的地"
+  },
+  "visa": {
+    "title": "中国签证指南",
+    "subtitle": "入境中国你需要知道的一切",
+    "transitExemption": "240小时过境免签",
+    "lVisa": "L签证旅游签",
+    "premiumService": "高级签证服务"
+  },
+  "orders": {
+    "title": "我的订单",
+    "subtitle": "追踪您的预订和旅行",
+    "active": "进行中",
+    "pending": "待处理",
+    "completed": "已完成",
+    "upcoming": "即将到来",
+    "all": "全部",
+    "totalSpent": "总消费",
+    "payNow": "立即支付",
+    "payLater": "稍后支付",
+    "confirmRelease": "确认并释放款项",
+    "cancel": "取消",
+    "viewOrder": "查看订单",
+    "createBooking": "创建预订"
+  },
+  "payment": {
+    "title": "完成支付",
+    "amountDue": "应付金额",
+    "heldInEscrow": "资金托管至服务完成",
+    "demoNotice": "演示模式：这是模拟支付，不会产生真实扣款。",
+    "processing": "处理中...",
+    "redirecting": "正在跳转支付...",
+    "successTitle": "支付成功！",
+    "cancelTitle": "支付已取消",
+    "escrowProtection": "资金托管保护",
+    "escrowDesc": "您的款项在确认服务完成前由第三方托管。如果导游未提供服务，您可以申请全额退款。"
+  },
+  "dashboard": {
+    "title": "工作台",
+    "overview": "概览",
+    "guideProfile": "导游资料",
+    "tourPlans": "旅行方案",
+    "content": "内容",
+    "orders": "订单",
+    "verification": "认证",
+    "earnings": "收入",
+    "newPost": "发布新帖",
+    "saveDraft": "保存草稿",
+    "publish": "发布"
+  },
+  "legal": {
+    "title": "法律条款",
+    "terms": "服务条款",
+    "privacy": "隐私政策"
+  }
+}

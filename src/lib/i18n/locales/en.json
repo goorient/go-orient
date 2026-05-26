@@ -1,0 +1,118 @@
+{
+  "common": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "loading": "Loading...",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "profile": "Profile",
+    "chat": "Chat",
+    "dashboard": "Dashboard",
+    "admin": "Admin"
+  },
+  "nav": {
+    "discover": "Discover",
+    "tourPlans": "Tour Plans",
+    "localGuides": "Local Guides",
+    "visa": "Visa",
+    "myOrders": "My Orders"
+  },
+  "home": {
+    "heroTitle": "Discover Authentic China",
+    "heroSubtitle": "with Local Guides",
+    "heroDesc": "Connect with verified local guides who bring China's wonders to life. From the Great Wall to hidden gems, experience the real China.",
+    "searchPlaceholder": "Search destinations, tours, or guides...",
+    "featuredTours": "Featured Tours",
+    "featuredGuides": "Featured Guides"
+  },
+  "plans": {
+    "title": "Tour Plans",
+    "subtitle": "Curated itineraries by verified local guides",
+    "searchPlaceholder": "Search tour plans...",
+    "allCities": "All Cities",
+    "noPlans": "No tour plans found",
+    "perPerson": "/person",
+    "days": "days",
+    "bookNow": "Book Now",
+    "viewDetails": "View Details"
+  },
+  "guides": {
+    "title": "Local Guides",
+    "subtitle": "Connect with verified local guides across China",
+    "searchPlaceholder": "Search guides...",
+    "allCities": "All Cities",
+    "noGuides": "No guides found",
+    "specialties": "Specialties",
+    "languages": "Languages",
+    "serviceCities": "Service Cities",
+    "yearsExperience": "years experience",
+    "contactGuide": "Contact Guide"
+  },
+  "feed": {
+    "title": "Travel Feed",
+    "subtitle": "Photos, stories, and travel tips from local guides",
+    "searchPlaceholder": "Search posts...",
+    "allDestinations": "All Destinations"
+  },
+  "visa": {
+    "title": "China Visa Guide",
+    "subtitle": "Everything you need to know about entering China",
+    "transitExemption": "240h Transit Exemption",
+    "lVisa": "L Visa Tourist",
+    "premiumService": "Premium Visa Service"
+  },
+  "orders": {
+    "title": "My Orders",
+    "subtitle": "Track your bookings and trips",
+    "active": "Active",
+    "pending": "Pending",
+    "completed": "Completed",
+    "upcoming": "Upcoming",
+    "all": "All",
+    "totalSpent": "Total Spent",
+    "payNow": "Pay Now",
+    "payLater": "Pay Later",
+    "confirmRelease": "Confirm & Release Payment",
+    "cancel": "Cancel",
+    "viewOrder": "View Order",
+    "createBooking": "Create Booking"
+  },
+  "payment": {
+    "title": "Complete Payment",
+    "amountDue": "Amount Due",
+    "heldInEscrow": "Held in escrow until service completion",
+    "demoNotice": "Demo Mode: This is a simulated payment. No real charges will be made.",
+    "processing": "Processing...",
+    "redirecting": "Redirecting to payment...",
+    "successTitle": "Payment Successful!",
+    "cancelTitle": "Payment Cancelled",
+    "escrowProtection": "Escrow Protection",
+    "escrowDesc": "Your payment is held in escrow until you confirm the service is completed. If the guide doesn't deliver, you can request a full refund."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "guideProfile": "Guide Profile",
+    "tourPlans": "Tour Plans",
+    "content": "Content",
+    "orders": "Orders",
+    "verification": "Verification",
+    "earnings": "Earnings",
+    "newPost": "New Post",
+    "saveDraft": "Save Draft",
+    "publish": "Publish"
+  },
+  "legal": {
+    "title": "Legal",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
+  }
+}
