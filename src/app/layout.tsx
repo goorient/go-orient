@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/providers/auth-provider";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://go-orient.com"),
   title: {
     default: "Go Orient — Discover China",
     template: "%s | Go Orient",
@@ -14,6 +15,16 @@ export const metadata: Metadata = {
     description: "Authentic experiences with verified local guides. From the Great Wall to hidden gems.",
     type: "website",
     locale: "en_US",
+    siteName: "Go Orient",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Go Orient — Discover China",
+    description: "Authentic experiences with verified local guides in China.",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
