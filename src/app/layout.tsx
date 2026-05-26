@@ -27,6 +27,16 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon-192.png',
+  },
+  manifest: '/manifest.webmanifest',
+  other: {
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'mobile-web-app-capable': 'yes',
+  },
 };
 
 export default function RootLayout({
